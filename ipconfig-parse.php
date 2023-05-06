@@ -8,9 +8,9 @@
 // a modified output with colors.
 //
 // Created: 2023-04-03 10:34 AM
-// Updated: 2023-04-03 11:21 AM
+// Updated: 2023-05-07 12:33 AM
 
-function __ipconfig_parse(string $stdout = '', bool $colors = false): array {
+function __ipconfig_parse(string $stdout = '', bool $colors = false, string $match = ''): array {
     if ($stdout == '')
         return [];
 
@@ -43,6 +43,7 @@ function __ipconfig_parse(string $stdout = '', bool $colors = false): array {
             // with the name of that interface.
             $line_before = $lines[$index - 1];
             $line_after  = $lines[$index + 1];
+
             if (empty($line_before) && empty($line_after) && $line[strlen($line) - 1] === ':') {
                 $colon_pos = strpos($line, ':');
                 $interface = substr($line, 0, $colon_pos);
@@ -63,19 +64,36 @@ function __ipconfig_parse(string $stdout = '', bool $colors = false): array {
         }
     }
 
+    //$find_match = !empty($match);
+    //$interfaces_matched = 0;
+
     // Write out the $interfaces to $newstdout with colors
     foreach ($interfaces as $index => $interface) {
         $newstdout[] = '';
-        $newstdout[] = "\x1B[36m[" . $index . "]\x1B[0m";
+
+        if (empty($index))
+            $index = "Windows IP Configuration";
+
+        $newstdout[] = $colors ? "\x1B[36m[$index]\x1B[0m" : "[$index]";
 
         foreach ($interface as $key => $value) {
+            //if ($find_match)
+                //if (!str_contains(strtolower($key), strtolower($match)))
+                    //continue;
+
             $key_padded = str_pad($key, 35, ' ', STR_PAD_RIGHT);
 
             if (empty($value))
-                $newstdout[] = "  \x1B[31m$key_padded : <empty>\x1B[0m";
+                $newstdout[] = $colors ? "  \x1B[31m$key_padded : <empty>\x1B[0m" : "  $key_padded : <empty>";
             else
-                $newstdout[] = "  \x1B[33m$key_padded : \x1B[32m$value\x1B[0m";
+                $newstdout[] = $colors ? "  \x1B[33m$key_padded : \x1B[32m$value\x1B[0m" : "  $key_padded : $value";
         }
+    }
+
+    if ($find_match && $interfaces_matched == 0) {
+        $newstdout = [
+            $colors ? "\x1B[31mError: No interfaces matched.\x1B[0m" : "Error: No interfaces matched."
+        ];
     }
 
     return $newstdout;
