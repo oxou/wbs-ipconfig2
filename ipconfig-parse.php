@@ -8,7 +8,7 @@
 // a modified output with colors.
 //
 // Created: 2023-04-03 10:34 AM
-// Updated: 2023-05-07 12:33 AM
+// Updated: 2023-05-08 02:16 PM
 
 function __ipconfig_parse(string $stdout = '', bool $colors = false, string $match = ''): array {
     if ($stdout == '')
@@ -90,11 +90,11 @@ function __ipconfig_parse(string $stdout = '', bool $colors = false, string $mat
         }
     }
 
-    if ($find_match && $interfaces_matched == 0) {
-        $newstdout = [
-            $colors ? "\x1B[31mError: No interfaces matched.\x1B[0m" : "Error: No interfaces matched."
-        ];
-    }
+    // if ($find_match && $interfaces_matched == 0) {
+        // $newstdout = [
+            // $colors ? "\x1B[31mError: No interfaces matched.\x1B[0m" : "Error: No interfaces matched."
+        // ];
+    // }
 
     return $newstdout;
 }
